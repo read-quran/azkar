@@ -66,7 +66,7 @@ function resetDhikr() {
 }
 
 function sharePage() {
-    let shareText = 'الاذكار اليومية:\n';
+    let shareText = 'الأذكار اليومية:\n';
     shareText += `${dhikr}\n`;
     shareText += `عدد مرات التكرار: ${count}\n\n`;
     if (hadith) shareText += ` ${hadith}\n\n`;
@@ -216,7 +216,7 @@ function exportDhikr() {
         }
         
         function shareDhikr() {
-            let shareText = 'الاذكار اليومية:\\n';
+            let shareText = 'الأذكار اليومية:\\n';
             shareText += dhikrText + '\\n';
             shareText += 'عدد مرات التكرار: ' + totalCount + '\\n\\n';
             if (hadithText) shareText += '' + hadithText + '\\n\\n';
