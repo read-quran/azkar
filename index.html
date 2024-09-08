@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عداد الأذكار</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    <div class="container">
+        <h1>عداد الأذكار</h1>
+        
+        <input id="dhikrInput" placeholder="أدخل الذكر">
+        <input id="countInput" type="number" placeholder="عدد المرات">
+        <input id="hadithInput" placeholder="الحديث (اختياري)">
+        <input id="virtuesInput" placeholder="الفضائل (اختياري)">
+        <input id="linkInput" placeholder="رابط للمشاركة (اختياري)">
+        
+        <button onclick="startDhikr()">ابدأ</button>
+        
+        <div id="dhikrDisplay"></div>
+        <div id="counter"></div>
+        
+        <button id="countButton" style="display: none;" onclick="incrementCounter()">انقر للعد</button>
+        
+        <div id="hadith"></div>
+        <div id="virtues"></div>
+        
+        <button id="resetBtn" style="display: none;" onclick="resetDhikr()">إعادة</button>
+        <button id="shareBtn" style="display: none;" onclick="sharePage()">مشاركة عبر واتساب</button>
+        <button id="exportBtn" style="display: none;" onclick="exportDhikr()">تصدير الأذكار</button>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
