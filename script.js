@@ -1,45 +1,109 @@
-let dhikr, hadith, virtues, count, currentCount, linkUrl;
+const dhikrInfo = {
+    "الصلاة على النبي": {
+        count: 10,
+        link: "https://read-quran.github.io/azkar/pages/1"
+    },
+    "سبحان الله وبحمده": {
+        count: 100,
+        link: "https://read-quran.github.io/azkar/pages/2"
+    }
+};
 
+let dhikrs = [];
+
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    saveSettings();
+}
+
+// إضافة نموذج ذكر جديد
+function addDhikrForm() {
+    const dhikrForms = document.getElementById('dhikrForms');
+    const newForm = document.createElement('div');
+    newForm.className = 'dhikr-form';
+    newForm.innerHTML = `
+        <input type="text" class="dhikrInput" placeholder="أدخل الذكر">
+        <input type="number" class="countInput" placeholder="عدد المرات" min="1">
+        <textarea class="hadithInput" placeholder="الحديث (اختياري)"></textarea>
+        <textarea class="virtuesInput" placeholder="الفضائل (اختياري)"></textarea>
+        <input type="url" class="linkInput" placeholder="رابط (اختياري)">
+    `;
+    dhikrForms.appendChild(newForm);
+}
+
+// بدء الذكر
 function startDhikr() {
-    dhikr = document.getElementById('dhikrInput').value;
-    hadith = document.getElementById('hadithInput').value;
-    virtues = document.getElementById('virtuesInput').value;
-    count = parseInt(document.getElementById('countInput').value);
-    linkUrl = document.getElementById('linkInput').value;
-    currentCount = 0;
+    const forms = document.querySelectorAll('.dhikr-form');
+    dhikrs = [];
 
-    if (!dhikr || !count) {
-        alert('الرجاء إدخال الذكر وعدد المرات');
+    forms.forEach((form, index) => {
+        const dhikr = form.querySelector('.dhikrInput').value;
+        const count = parseInt(form.querySelector('.countInput').value);
+        const hadith = form.querySelector('.hadithInput').value;
+        const virtues = form.querySelector('.virtuesInput').value;
+        const linkUrl = form.querySelector('.linkInput').value;
+
+        if (dhikr && count) {
+            dhikrs.push({ dhikr, count, hadith, virtues, linkUrl, currentCount: 0 });
+        }
+    });
+
+    if (dhikrs.length === 0) {
+        alert('الرجاء إدخال الذكر وعدد المرات على الأقل');
         return;
     }
 
-    document.getElementById('dhikrDisplay').textContent = dhikr;
-    updateCounter();
+    displayDhikrs();
     document.getElementById('countButton').style.display = 'block';
 }
 
-function incrementCounter() {
-    currentCount++;
-    updateCounter();
+// عرض الأذكار
+function displayDhikrs() {
+    const dhikrDisplays = document.getElementById('dhikrDisplays');
+    dhikrDisplays.innerHTML = '';
 
-    if (currentCount === count) {
+    dhikrs.forEach((dhikr, index) => {
+        const dhikrElement = document.createElement('div');
+        dhikrElement.className = 'dhikr-display';
+        dhikrElement.innerHTML = `
+            <div class="dhikr-text">${dhikr.dhikr}</div>
+            <div class="dhikr-counter" id="counter-${index}">${dhikr.currentCount} / ${dhikr.count}</div>
+        `;
+        dhikrDisplays.appendChild(dhikrElement);
+    });
+}
+
+// زيادة العداد
+function incrementCounter() {
+    let allCompleted = true;
+
+    dhikrs.forEach((dhikr, index) => {
+        if (dhikr.currentCount < dhikr.count) {
+            dhikr.currentCount++;
+            document.getElementById(`counter-${index}`).textContent = `${dhikr.currentCount} / ${dhikr.count}`;
+            animateCounter(`counter-${index}`);
+            allCompleted = false;
+        }
+    });
+
+    if (allCompleted) {
         document.getElementById('countButton').style.display = 'none';
         showCompletion();
     }
-
-    document.getElementById('counter').style.animation = 'pulse 0.3s';
-    setTimeout(() => {
-        document.getElementById('counter').style.animation = 'none';
-    }, 300);
 }
 
-function updateCounter() {
-    document.getElementById('counter').textContent = `${currentCount} / ${count}`;
-}
-
+// إظهار رسالة الإكمال
 function showCompletion() {
-    document.getElementById('hadith').textContent = hadith;
-    document.getElementById('virtues').textContent = virtues;
+    let hadithText = '';
+    let virtuesText = '';
+
+    dhikrs.forEach(dhikr => {
+        if (dhikr.hadith) hadithText += dhikr.hadith + '\n\n';
+        if (dhikr.virtues) virtuesText += dhikr.virtues + '\n\n';
+    });
+
+    document.getElementById('hadith').textContent = hadithText.trim();
+    document.getElementById('virtues').textContent = virtuesText.trim();
     document.getElementById('hadith').style.display = 'block';
     document.getElementById('virtues').style.display = 'block';
     document.getElementById('resetBtn').style.display = 'inline-block';
@@ -47,14 +111,19 @@ function showCompletion() {
     document.getElementById('exportBtn').style.display = 'inline-block';
 }
 
+// إعادة تعيين الذكر
 function resetDhikr() {
-    document.getElementById('dhikrInput').value = '';
-    document.getElementById('hadithInput').value = '';
-    document.getElementById('virtuesInput').value = '';
-    document.getElementById('countInput').value = '';
-    document.getElementById('linkInput').value = '';
-    document.getElementById('dhikrDisplay').textContent = '';
-    document.getElementById('counter').textContent = '';
+    dhikrs = [];
+    document.getElementById('dhikrForms').innerHTML = `
+        <div class="dhikr-form">
+            <input type="text" class="dhikrInput" placeholder="أدخل الذكر">
+            <input type="number" class="countInput" placeholder="عدد المرات" min="1">
+            <textarea class="hadithInput" placeholder="الحديث (اختياري)"></textarea>
+            <textarea class="virtuesInput" placeholder="الفضائل (اختياري)"></textarea>
+            <input type="url" class="linkInput" placeholder="رابط (اختياري)">
+        </div>
+    `;
+    document.getElementById('dhikrDisplays').innerHTML = '';
     document.getElementById('hadith').textContent = '';
     document.getElementById('virtues').textContent = '';
     document.getElementById('hadith').style.display = 'none';
@@ -65,19 +134,43 @@ function resetDhikr() {
     document.getElementById('countButton').style.display = 'none';
 }
 
+// مشاركة الصفحة
 function sharePage() {
-    let shareText = 'الأذكار اليومية:\n';
-    shareText += `${dhikr}\n`;
-    shareText += `عدد مرات التكرار: ${count}\n\n`;
-    if (hadith) shareText += ` ${hadith}\n\n`;
-    if (virtues) shareText += ` ${virtues}\n\n`;
-    if (linkUrl) shareText += linkUrl;
+    let shareText = 'الأذكار اليومية:\n\n';
+    
+    dhikrs.forEach(dhikr => {
+        shareText += `${dhikr.dhikr}\n`;
+        shareText += `عدد مرات التكرار: ${dhikr.count}\n`;
+        if (dhikr.hadith) shareText += `الحديث: ${dhikr.hadith}\n`;
+        if (dhikr.virtues) shareText += `الفضائل: ${dhikr.virtues}\n`;
+        if (dhikr.linkUrl) shareText += `الرابط: ${dhikr.linkUrl}\n`;
+        shareText += '\n';
+    });
 
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    shareViaWhatsApp(shareText);
+}
+
+// مشاركة عبر واتساب
+function shareViaWhatsApp(text) {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(whatsappUrl, '_blank');
 }
 
+// تصدير الذكر
 function exportDhikr() {
+    let dhikrsHtml = '';
+    dhikrs.forEach((dhikr, index) => {
+        dhikrsHtml += `
+            <div class="dhikr-item">
+                <h2>${dhikr.dhikr}</h2>
+                <div class="counter" id="counter-${index}">0 / ${dhikr.count}</div>
+                <button class="count-btn" onclick="incrementCounter(${index})">انقر للعد</button>
+                <div class="hadith" style="display: none;">${dhikr.hadith || ''}</div>
+                <div class="virtues" style="display: none;">${dhikr.virtues || ''}</div>
+            </div>
+        `;
+    });
+
     const exportContent = `
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -87,12 +180,14 @@ function exportDhikr() {
     <title>عداد الأذكار</title>
     <style>
         :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
             --background-light: #f0f0f0;
             --background-dark: #333;
             --text-light: #333;
             --text-dark: #f0f0f0;
-            --primary-color: #4a90e2;
-            --secondary-color: #f39c12;
+            --container-bg-light: #ffffff;
+            --container-bg-dark: #444;
         }
         body {
             font-family: 'Arial', sans-serif;
@@ -112,7 +207,7 @@ function exportDhikr() {
             color: var(--text-dark);
         }
         .container {
-            background-color: white;
+            background-color: var(--container-bg-light);
             border-radius: 10px;
             padding: 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -120,29 +215,39 @@ function exportDhikr() {
             width: 100%;
         }
         body.dark-mode .container {
-            background-color: #444;
+            background-color: var(--container-bg-dark);
         }
-        h1 { 
+        h1, h2 { 
             color: var(--primary-color);
             margin-bottom: 1rem;
         }
-        #dhikr, #counter { 
-            font-size: 1.5rem;
+        .dhikr-item {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: rgba(74, 144, 226, 0.1);
+            border-radius: 5px;
+        }
+        .counter { 
+            font-size: 2rem;
+            color: var(--secondary-color);
             margin: 1rem 0;
         }
-        #countButton {
-            font-size: 1.5rem;
-            padding: 0.75rem 1.5rem;
-            margin: 1rem 0;
+        .count-btn {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
             background-color: var(--secondary-color);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
-        #counter { 
-            font-size: 2rem;
-            color: var(--secondary-color);
+        .count-btn:hover {
+            background-color: #e67e22;
+        }
+        .hadith, .virtues {
+            margin-top: 1rem;
+            font-style: italic;
         }
         .button {
             font-size: 1rem;
@@ -154,14 +259,6 @@ function exportDhikr() {
             border-radius: 5px;
             cursor: pointer;
         }
-        #finalMessage {
-            display: none;
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-        }
         .theme-toggle {
             position: absolute;
             top: 1rem;
@@ -171,63 +268,66 @@ function exportDhikr() {
             font-size: 1.5rem;
             cursor: pointer;
         }
-    </style>
+     </style>
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <div class="container">
         <h1>عداد الأذكار</h1>
-        <div id="dhikr">${dhikr}</div>
-        <div id="counter">0 / ${count}</div>
-        <button id="countButton" onclick="incrementCounter()">انقر للعد</button>
-        <div id="finalMessage"></div>
+        <div id="dhikrContainer">
+            ${dhikrsHtml}
+        </div>
         <button id="shareButton" class="button" onclick="shareDhikr()" style="display: none;">مشاركة عبر واتساب</button>
         <button id="resetButton" class="button" onclick="resetCounter()" style="display: none;">إعادة</button>
     </div>
     <script>
-        let currentCount = 0;
-        const totalCount = ${count};
-        const dhikrText = "${dhikr}";
-        const hadithText = "${hadith}";
-        const virtuesText = "${virtues}";
-        const linkUrl = "${linkUrl}";
-        
-        function incrementCounter() {
-            currentCount++;
-            document.getElementById('counter').textContent = currentCount + ' / ' + totalCount;
-            if (currentCount === totalCount) {
-                document.getElementById('countButton').style.display = 'none';
-                document.getElementById('dhikr').style.display = 'none';
-                document.getElementById('finalMessage').style.display = 'block';
-                document.getElementById('finalMessage').textContent = hadithText + '\\n\\n' + virtuesText;
-                document.getElementById('shareButton').style.display = 'inline-block';
-                document.getElementById('resetButton').style.display = 'inline-block';
+        const dhikrs = ${JSON.stringify(dhikrs)};
+        let currentCounts = dhikrs.map(() => 0);
+
+        function incrementCounter(index) {
+            if (currentCounts[index] < dhikrs[index].count) {
+                currentCounts[index]++;
+                document.getElementById(\`counter-\${index}\`).textContent = \`\${currentCounts[index]} / \${dhikrs[index].count}\`;
+                if (currentCounts[index] === dhikrs[index].count) {
+                    document.querySelector(\`#counter-\${index} + .count-btn\`).style.display = 'none';
+                    document.querySelector(\`#counter-\${index} ~ .hadith\`).style.display = 'block';
+                    document.querySelector(\`#counter-\${index} ~ .virtues\`).style.display = 'block';
+                }
+                if (currentCounts.every((count, i) => count === dhikrs[i].count)) {
+                    document.getElementById('shareButton').style.display = 'inline-block';
+                    document.getElementById('resetButton').style.display = 'inline-block';
+                }
             }
         }
-        
+
         function resetCounter() {
-            currentCount = 0;
-            document.getElementById('counter').textContent = '0 / ' + totalCount;
-            document.getElementById('countButton').style.display = 'inline-block';
-            document.getElementById('dhikr').style.display = 'block';
-            document.getElementById('finalMessage').style.display = 'none';
+            currentCounts = dhikrs.map(() => 0);
+            dhikrs.forEach((dhikr, index) => {
+                document.getElementById(\`counter-\${index}\`).textContent = \`0 / \${dhikr.count}\`;
+                document.querySelector(\`#counter-\${index} + .count-btn\`).style.display = 'inline-block';
+                document.querySelector(\`#counter-\${index} ~ .hadith\`).style.display = 'none';
+                document.querySelector(\`#counter-\${index} ~ .virtues\`).style.display = 'none';
+            });
             document.getElementById('shareButton').style.display = 'none';
             document.getElementById('resetButton').style.display = 'none';
         }
-        
+
         function shareDhikr() {
-            let shareText = 'الأذكار اليومية:\\n';
-            shareText += dhikrText + '\\n';
-            shareText += 'عدد مرات التكرار: ' + totalCount + '\\n\\n';
-            if (hadithText) shareText += '' + hadithText + '\\n\\n';
-            if (virtuesText) shareText += '' + virtuesText + '\\n\\n';
-            if (linkUrl) shareText += linkUrl;
+            let shareText = 'الأذكار اليومية:\\n\\n';
+            dhikrs.forEach((dhikr, index) => {
+                shareText += \`\${dhikr.dhikr}\\n\`;
+                shareText += \`عدد مرات التكرار: \${dhikr.count}\\n\`;
+                if (dhikr.hadith) shareText += \`الحديث: \${dhikr.hadith}\\n\`;
+                if (dhikr.virtues) shareText += \`الفضائل: \${dhikr.virtues}\\n\`;
+                if (dhikr.linkUrl) shareText += \`الرابط: \${dhikr.linkUrl}\\n\`;
+                shareText += '\\n';
+            });
             
             const whatsappUrl = \`https://wa.me/?text=\${encodeURIComponent(shareText)}\`;
             window.open(whatsappUrl, '_blank');
         }
 
-        function toggleTheme() {
+function toggleTheme() {
             document.body.classList.toggle('dark-mode');
         }
     </script>
@@ -246,6 +346,56 @@ function exportDhikr() {
     URL.revokeObjectURL(url);
 }
 
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
+// مشاركة الرابط المحدد مسبقًا
+function sharePredefinedLink() {
+    const selectedDhikr = document.getElementById('predefinedDhikr').value;
+    if (selectedDhikr && dhikrInfo[selectedDhikr]) {
+        const { count, link } = dhikrInfo[selectedDhikr];
+        const shareText = `الذكر: ${selectedDhikr}\nعدد مرات التكرار: ${count}\n\n${link}`;
+        shareViaWhatsApp(shareText);
+    } else {
+        alert('الرجاء اختيار ذكر من القائمة');
+    }
 }
+
+// تحريك العداد
+function animateCounter(counterId) {
+    const counter = document.getElementById(counterId);
+    counter.style.animation = 'none';
+    counter.offsetHeight; // trigger reflow
+    counter.style.animation = 'pulse 0.3s';
+}
+
+// تحميل الإعدادات المحفوظة
+function loadSavedSettings() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+}
+
+// حفظ الإعدادات
+function saveSettings() {
+    const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+}
+
+// تهيئة التطبيق
+function initApp() {
+    loadSavedSettings();
+    document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
+    document.getElementById('addDhikrBtn').addEventListener('click', addDhikrForm);
+    document.getElementById('predefinedDhikr').addEventListener('change', function() {
+        const selectedDhikr = this.value;
+        if (selectedDhikr && dhikrInfo[selectedDhikr]) {
+            const lastForm = document.querySelector('.dhikr-form:last-child');
+            lastForm.querySelector('.dhikrInput').value = selectedDhikr;
+            lastForm.querySelector('.countInput').value = dhikrInfo[selectedDhikr].count;
+            lastForm.querySelector('.linkInput').value = dhikrInfo[selectedDhikr].link;
+        }
+    });
+    document.getElementById('sharePredefinedLink').addEventListener('click', sharePredefinedLink);
+}
+
+// تشغيل التهيئة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', initApp);
