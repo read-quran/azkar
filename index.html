@@ -8,30 +8,48 @@
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-    <div class="container">
+    <div class="container" role="main">
         <h1>عداد الأذكار</h1>
         
-        <input id="dhikrInput" placeholder="أدخل الذكر">
-        <input id="countInput" type="number" placeholder="عدد المرات">
-        <input id="hadithInput" placeholder="الحديث (اختياري)">
-        <input id="virtuesInput" placeholder="الفضائل (اختياري)">
-        <input id="linkInput" placeholder="رابط للمشاركة (اختياري)">
+        <div id="dhikrForms">
+            <div class="dhikr-form">
+                <input type="text" class="dhikrInput" placeholder="أدخل الذكر">
+                <input type="number" class="countInput" placeholder="عدد المرات" min="1">
+                <textarea class="hadithInput" placeholder="الحديث (اختياري)"></textarea>
+                <textarea class="virtuesInput" placeholder="الفضائل (اختياري)"></textarea>
+                <input type="url" class="linkInput" placeholder="رابط (اختياري)">
+            </div>
+        </div>
         
-        <button onclick="startDhikr()">ابدأ</button>
+<button id="addDhikrBtn">+ إضافة ذكر</button>
+
         
-        <div id="dhikrDisplay"></div>
-        <div id="counter"></div>
+        <div class="dhikr-selector">
+            <select id="predefinedDhikr">
+                <option value="">اختر ذكراً</option>
+                <option value="الصلاة على النبي">الصلاة على النبي</option>
+                <option value="سبحان الله وبحمده">سبحان الله وبحمده</option>
+            </select>
+            <button id="sharePredefinedLink">مشاركة الرابط</button>
+        </div>
         
-        <button id="countButton" style="display: none;" onclick="incrementCounter()">انقر للعد</button>
+        <button class="start-btn" onclick="startDhikr()">ابدأ</button>
         
-        <div id="hadith"></div>
-        <div id="virtues"></div>
+        <div id="dhikrDisplays"></div>
         
-        <button id="resetBtn" style="display: none;" onclick="resetDhikr()">إعادة</button>
-        <button id="shareBtn" style="display: none;" onclick="sharePage()">مشاركة عبر واتساب</button>
-        <button id="exportBtn" style="display: none;" onclick="exportDhikr()">تصدير الأذكار</button>
+        <button id="countButton" class="count-btn" style="display: none;" onclick="incrementCounter()">انقر للعد</button>
+        
+        <div class="dhikr-info">
+            <div id="hadith"></div>
+            <div id="virtues"></div>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="resetBtn" class="action-btn" onclick="resetDhikr()">إعادة</button>
+            <button id="shareBtn" class="action-btn" onclick="sharePage()">مشاركة عبر واتساب</button>
+            <button id="exportBtn" class="action-btn" onclick="exportDhikr()">تصدير الأذكار</button>
+        </div>
     </div>
-    
     <script src="script.js"></script>
 </body>
 </html>
