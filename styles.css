@@ -28,7 +28,7 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
-    background-color: var(--background-light);
+    background-color: var(--background-dark);
     color: var(--text-light);
 }
 
@@ -39,38 +39,50 @@ body.dark-mode {
 
 .container {
     background-color: var(--container-bg-light);
-    border-radius: 10px;
+    border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
+    max-width: 500px;
+    width: 90%;
     text-align: center;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 body.dark-mode .container {
     background-color: var(--container-bg-dark);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
 h1 {
     color: var(--primary-color);
     margin-bottom: 1.5rem;
+    font-size: 2.5rem;
 }
 
-input, textarea {
+input, textarea, select {
     width: 100%;
     padding: 0.75rem;
     margin: 0.5rem 0;
     border: 1px solid var(--input-border-light);
     border-radius: 5px;
     font-size: 1rem;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    transition: all 0.3s ease;
 }
 
-body.dark-mode input, body.dark-mode textarea {
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
     background-color: var(--input-bg-dark);
     border-color: var(--input-border-dark);
     color: var(--text-dark);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
 button {
@@ -80,25 +92,47 @@ button {
     padding: 0.75rem 1.5rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
     font-size: 1rem;
     margin: 0.5rem 0;
 }
 
 button:hover {
     background-color: #3a7bd5;
+    transform: translateY(-2px);
 }
 
-#dhikrDisplay {
-    font-size: 1.5rem;
+.start-btn, .count-btn {
+    font-size: 1.25rem;
+    padding: 1rem 2rem;
     margin: 1rem 0;
-    font-weight: bold;
+    background-color: var(--secondary-color);
 }
 
-#counter {
+.start-btn:hover, .count-btn:hover {
+    background-color: #e67e22;
+}
+
+#dhikrDisplays {
+    margin: 1rem 0;
+}
+
+.dhikr-display {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dhikr-text {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.dhikr-counter {
     font-size: 2.5rem;
     color: var(--secondary-color);
-    margin: 1rem 0;
     font-weight: bold;
 }
 
@@ -120,25 +154,54 @@ button:hover {
     cursor: pointer;
 }
 
-#countButton {
-    font-size: 1.5rem;
-    padding: 1rem 2rem;
-    margin: 1rem 0;
-    background-color: var(--secondary-color);
-}
-
-#countButton:hover {
-    background-color: #e67e22;
-}
-
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
 
-#resetBtn, #shareBtn, #exportBtn {
+.action-btn {
     display: none;
+}
+
+.dhikr-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+#predefinedDhikr {
+    flex-grow: 1;
+}
+
+#sharePredefinedLink {
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.dhikr-form {
+    background-color: rgba(74, 144, 226, 0.05);
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+#addDhikrBtn {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    margin: 0.5rem 0 1rem;
+}
+
+#addDhikrBtn:hover {
+    background-color: #3a7bd5;
 }
 
 @media (max-width: 480px) {
@@ -147,23 +210,32 @@ button:hover {
     }
 
     h1 {
-        font-size: 1.75rem;
-    }
-
-    input, textarea, button {
-        font-size: 0.9rem;
-    }
-
-    #dhikrDisplay {
-        font-size: 1.25rem;
-    }
-
-    #counter {
         font-size: 2rem;
     }
 
-    #countButton {
-        font-size: 1.25rem;
+    input, textarea, select, button {
+        font-size: 0.9rem;
+    }
+
+    .dhikr-text {
+        font-size: 1.5rem;
+    }
+
+    .dhikr-counter {
+        font-size: 2rem;
+    }
+
+    .start-btn, .count-btn {
+        font-size: 1.1rem;
         padding: 0.75rem 1.5rem;
+    }
+
+    .dhikr-selector {
+        flex-direction: column;
+    }
+
+    #predefinedDhikr, #sharePredefinedLink {
+        width: 100%;
+        margin: 0.5rem 0;
     }
 }
